@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import se.nios.sensorapp.dbhelper.SensorDBHelper;
+
 
 /**
  * Created by Nicklas on 2017-04-04.
@@ -31,7 +33,7 @@ public class SensorService extends Service implements Runnable {
     private Thread serviceThread = null;
     private boolean runService = true;
     private long sleepInterval; //In milliseconds
-    private DBHelper dbHelper;
+    private SensorDBHelper sensorDbHelper;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -51,7 +53,7 @@ public class SensorService extends Service implements Runnable {
     @Override
     public void run() {
         Looper.prepare();
-        dbHelper = new DBHelper(this);
+        sensorDbHelper = new SensorDBHelper(this);
 
         while (runService) {
 
@@ -75,18 +77,31 @@ public class SensorService extends Service implements Runnable {
         return null;
     }
 
-    private class GetSensorUpdateTask extends AsyncTask<String, Integer, String> {
+    private class GetSensorUpdateTask extends AsyncTask<String, Integer, SensorData> {
+
+        private SensorDBHelper sensorDbHelper;
         private String urlResponse;
         private InputStream inputStream;
         private JSONObject jsonObject;
         private JSONObject userData;
         private JSONObject parsedEntry;
-        private Date date;
+
+        SensorData sensorData;
+        private String moteeui;
+        private String temperature;
+        private String humidity;
+        private String light;
+        private String motionCounter;
+        private String battery;
+        private Date timeDate;
+        private String timeString;
         private String counter;
 
 
+
+
         @Override
-        protected String doInBackground(String... params) {
+        protected SensorData doInBackground(String... params) {
             try {
                 inputStream = downloadUrl(params[0]);
                 while (inputStream == null) {
@@ -110,33 +125,55 @@ public class SensorService extends Service implements Runnable {
             }
             try {
                 jsonObject = new JSONObject(urlResponse);
+                //Receiving stations are in an array.. need to get date from atleast one of them
                 JSONArray sensorDate = jsonObject.getJSONArray("gwrx");
                 JSONObject tempObject;
-                String id;
                 for(int i  = 0; i < sensorDate.length();i++ ){
                     tempObject = sensorDate.getJSONObject(i);
-                   String time = tempObject.getString("time");
-                    if(time != null){
-                        Log.d(TAG,time);
+                   timeString = tempObject.getString("time");
+                    if(timeString != null){
+                        Log.d(TAG,timeString);
                         break;
                     }
                 }
+                /*
+                        private String moteeui;
+        private String temperature;
+        private String humidity;
+        private String light;
+        private String motionCounter;
+        private String battery;
+        private Date timeDate;
+        private String timeString;
+        private String counter;
+                 */
+                //Go into object to get object..
                 userData = jsonObject.getJSONObject("userdata");
                 parsedEntry = userData.getJSONObject("parsedEntry");
-                counter = parsedEntry.getString("motionCounter");
+                //Sensor data
+                moteeui = jsonObject.getString("moteeui");
+                temperature = parsedEntry.getString("temperature");
+                humidity = parsedEntry.getString("humidity");
+                light = parsedEntry.getString("light");
+                motionCounter = parsedEntry.getString("motionCounter");
+                battery = parsedEntry.getString("battery");
+                sensorData = new SensorData(timeString+"+"+moteeui,temperature,humidity,light,motionCounter,battery,timeString);
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            return String.valueOf(counter);
+            return sensorData;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            Log.d(TAG, String.valueOf(counter));
+        protected void onPostExecute(SensorData sensorData) {
+            Log.d(TAG, String.valueOf(motionCounter));
+            Log.d(TAG,sensorData.toString());
 
-            super.onPostExecute(s);
+
+            super.onPostExecute(sensorData);
         }
     }
 

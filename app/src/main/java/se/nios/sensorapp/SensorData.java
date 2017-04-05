@@ -7,41 +7,82 @@ import java.util.Date;
  */
 
 class SensorData {
-    private String ID;
-    private Date timestamp;
-    private int passCounter;
+    private String moteeui;
+    private String temperature;
+    private String humidity;
+    private String light;
+    private String motionCounter;
+    private String battery;
+    private String timeString;
 
-    SensorData(){
-
+    public SensorData(String moteeui, String temperature, String humidity, String light, String motionCounter, String battery, String timeString) {
+        this.moteeui = moteeui;
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.light = light;
+        this.motionCounter = motionCounter;
+        this.battery = battery;
+        this.timeString = timeString;
     }
 
-    SensorData(String ID, Date timestamp, int passAmount){
-        this.ID = ID;
-        this.timestamp = timestamp;
-        this.passCounter = passAmount;
+    public String getMoteeui() {
+        return moteeui;
     }
 
-    public String getID() {
-        return ID;
+    public void setMoteeui(String moteeui) {
+        this.moteeui = moteeui;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public String getTemperature() {
+        return temperature;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public String getHumidity() {
+        return humidity;
     }
 
-    public int getPassCounter() {
-        return passCounter;
+    public void setHumidity(String humidity) {
+        this.humidity = humidity;
     }
 
-    public void setPassCounter(int passCounter) {
-        this.passCounter = passCounter;
+    public String getLight() {
+        return light;
+    }
+
+    public void setLight(String light) {
+        this.light = light;
+    }
+
+    public String getMotionCounter() {
+        return motionCounter;
+    }
+
+    public void setMotionCounter(String motionCounter) {
+        this.motionCounter = motionCounter;
+    }
+
+    public String getBattery() {
+        return battery;
+    }
+
+    public void setBattery(String battery) {
+        this.battery = battery;
+    }
+
+    public String getTimeString() {
+        return timeString;
+    }
+
+    public void setTimeString(String timeString) {
+        this.timeString = timeString;
+    }
+
+    @Override
+    public String toString() {
+        return moteeui + " : "+ battery + " : " + humidity + " : " + motionCounter + " : " + light + " : " + timeString;
     }
 }
