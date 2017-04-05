@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -30,6 +31,7 @@ public class SensorService extends Service implements Runnable {
     private Thread serviceThread = null;
     private boolean runService = true;
     private long sleepInterval; //In milliseconds
+    private DBHelper dbHelper;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -48,6 +50,8 @@ public class SensorService extends Service implements Runnable {
 
     @Override
     public void run() {
+        Looper.prepare();
+        dbHelper = new DBHelper(this);
 
         while (runService) {
 
@@ -131,6 +135,7 @@ public class SensorService extends Service implements Runnable {
         @Override
         protected void onPostExecute(String s) {
             Log.d(TAG, String.valueOf(counter));
+
             super.onPostExecute(s);
         }
     }
