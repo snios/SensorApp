@@ -15,15 +15,15 @@ import java.util.ArrayList;
 
 public class SensorDataDBHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME = "SensorProject.db";
-    public static final String SENSORS_TABLE_NAME ="sensor_data";
-    public static final String SENSOR_COLUMN_ID = "id";
-    public static final String SENSOR_COLUMN_SEQNO ="seqno";
-    public static final String SENSOR_COLUMN_PAYLOAD ="payload";
-    public static final String SENSOR_COLUMN_TEMPERATURE ="temperature";
-    public static final String SENSOR_COLUMN_HUMIDITY ="humidity";
-    public static final String SENSOR_COLUMN_LIGHT ="light";
-    public static final String SENSOR_COLUMN_MOTION_COUNTER ="motion_counter";
-    public static final String SENSOR_COLUMN_BATTERY ="battery";
+    public static final String SENSOR_DATA_TABLE_NAME ="sensor_data";
+    public static final String SENSOR_DATA_COLUMN_ID = "id";
+    public static final String SENSOR_DATA_COLUMN_SEQNO ="seqno";
+    public static final String SENSOR_DATA_COLUMN_PAYLOAD ="payload";
+    public static final String SENSOR_DATA_COLUMN_TEMPERATURE ="temperature";
+    public static final String SENSOR_DATA_COLUMN_HUMIDITY ="humidity";
+    public static final String SENSOR_DATA_COLUMN_LIGHT ="light";
+    public static final String SENSOR_DATA_COLUMN_MOTION_COUNTER ="motion_counter";
+    public static final String SENSOR_DATA_COLUMN_BATTERY ="battery";
 
 
 
@@ -53,7 +53,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         contentValues.put("light", light);
         contentValues.put("motion_counter",motionCounter);
         contentValues.put("battery",battery);
-        db.insert("sensors", null, contentValues);
+        db.insert("sensor_data", null, contentValues);
         return true;
     }
     public Cursor getData(String id) {
@@ -63,7 +63,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     }
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, SENSORS_TABLE_NAME);
+        int numRows = (int) DatabaseUtils.queryNumEntries(db, SENSOR_DATA_TABLE_NAME);
         return numRows;
     }
 
@@ -77,18 +77,18 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         contentValues.put("light", light);
         contentValues.put("motionCounter",motionCounter);
         contentValues.put("battery",battery);
-        db.update("sensors", contentValues, "seqno = ? ", new String[] { id } );
+        db.update("sensor_data", contentValues, "id = ? ", new String[] { id } );
         return true;
     }
 
     public Integer deleteSensorValue (String id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete("sensors",
+        return db.delete("sensor_data",
                 "id = ? ",
                 new String[] { id });
     }
 
-    public ArrayList<String> getAllSensors() {
+    public ArrayList<String> getAllSensorData() {
         ArrayList<String> array_list = new ArrayList<String>();
 
         //hp = new HashMap();
@@ -97,7 +97,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex(SENSORS_TABLE_NAME)));
+            array_list.add(res.getString(res.getColumnIndex(SENSOR_DATA_TABLE_NAME)));
             res.moveToNext();
         }
         return array_list;

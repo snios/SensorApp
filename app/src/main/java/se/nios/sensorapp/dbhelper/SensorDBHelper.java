@@ -39,7 +39,7 @@ public class SensorDBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS sensors");
         onCreate(db);
     }
-    public boolean insertSensorData(String name,String group,String location){
+    public boolean insertSensor(String name,String group,String location){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", name);
