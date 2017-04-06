@@ -2,6 +2,7 @@ package se.nios.sensorapp;
 
 import android.app.Service;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Looper;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import se.nios.sensorapp.dbhelper.SensorDBHelper;
+import se.nios.sensorapp.dbhelper.SensorDataDBHelper;
 
 
 /**
@@ -38,6 +40,7 @@ public class SensorService extends Service implements Runnable {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (serviceThread == null) {
+            sensorDbHelper = new SensorDBHelper(this);
             serviceThread = new Thread(this);
             serviceThread.start();
         }
@@ -46,6 +49,7 @@ public class SensorService extends Service implements Runnable {
 
     @Override
     public void onDestroy() {
+        sensorDbHelper.close();
         super.onDestroy();
     }
 
@@ -53,7 +57,7 @@ public class SensorService extends Service implements Runnable {
     @Override
     public void run() {
         Looper.prepare();
-        sensorDbHelper = new SensorDBHelper(this);
+
 
         while (runService) {
 
@@ -86,13 +90,17 @@ public class SensorService extends Service implements Runnable {
         private JSONObject userData;
         private JSONObject parsedEntry;
 
-        SensorData sensorData;
+        private SensorData sensorData;
+        private SensorDataDBHelper sensorDataDBHelper = new SensorDataDBHelper(getApplicationContext());
+
         private String moteeui;
         private String temperature;
         private String humidity;
         private String light;
         private String motionCounter;
         private String battery;
+        private String seqno;
+        private String payload;
         private Date timeDate;
         private String timeString;
         private String counter;
@@ -151,13 +159,15 @@ public class SensorService extends Service implements Runnable {
                 userData = jsonObject.getJSONObject("userdata");
                 parsedEntry = userData.getJSONObject("parsedEntry");
                 //Sensor data
+                payload=userData.getString("payload");
                 moteeui = jsonObject.getString("moteeui");
+                seqno = jsonObject.getString("seqno");
                 temperature = parsedEntry.getString("temperature");
                 humidity = parsedEntry.getString("humidity");
                 light = parsedEntry.getString("light");
                 motionCounter = parsedEntry.getString("motionCounter");
                 battery = parsedEntry.getString("battery");
-                sensorData = new SensorData(timeString+"+"+moteeui,temperature,humidity,light,motionCounter,battery,timeString);
+                sensorData = new SensorData(timeString+"+"+moteeui,payload,seqno,temperature,humidity,light,motionCounter,battery,timeString);
 
 
             } catch (JSONException e) {
@@ -171,6 +181,14 @@ public class SensorService extends Service implements Runnable {
         protected void onPostExecute(SensorData sensorData) {
             Log.d(TAG, String.valueOf(motionCounter));
             Log.d(TAG,sensorData.toString());
+
+            try {
+                sensorDataDBHelper.insertSensorData(moteeui, seqno, timeString, payload, temperature, humidity, light, motionCounter, battery);
+            }catch (SQLException e){
+                Log.d(TAG,"SQL exception = " + e.getMessage());
+            }
+            Log.d(TAG,"Rows in table: "+String.valueOf(sensorDataDBHelper.numberOfRows()));
+
 
 
             super.onPostExecute(sensorData);

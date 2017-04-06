@@ -4,56 +4,79 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
+
+import se.nios.sensorapp.SensorReaderContract.SensorData;
 
 /**
  * Created by Nicklas on 2017-04-05.
  */
 
 public class SensorDataDBHelper extends SQLiteOpenHelper{
-    public static final String DATABASE_NAME = "SensorProject.db";
-    public static final String SENSOR_DATA_TABLE_NAME ="sensor_data";
-    public static final String SENSOR_DATA_COLUMN_ID = "id";
-    public static final String SENSOR_DATA_COLUMN_SEQNO ="seqno";
-    public static final String SENSOR_DATA_COLUMN_PAYLOAD ="payload";
-    public static final String SENSOR_DATA_COLUMN_TEMPERATURE ="temperature";
-    public static final String SENSOR_DATA_COLUMN_HUMIDITY ="humidity";
-    public static final String SENSOR_DATA_COLUMN_LIGHT ="light";
-    public static final String SENSOR_DATA_COLUMN_MOTION_COUNTER ="motion_counter";
-    public static final String SENSOR_DATA_COLUMN_BATTERY ="battery";
+    private static final String TAG = "SensorDataDBHelper";
+    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME ="SensorApp.db";
+
+
+    private static final String SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + SensorData.TABLE_NAME + " (" +
+                    SensorData._ID + " INTEGER PRIMARY KEY," +
+                    SensorData.COLUMN_NAME_SENSOR_ID + " TEXT," +
+                    SensorData.COLUMN_NAME_SEQNO + " TEXT," +
+                    SensorData.COLUMN_NAME_BATTERY +" TEXT," +
+                    SensorData.COLUMN_NAME_HUMIDITY + " TEXT," +
+                    SensorData.COLUMN_NAME_LIGHT + " TEXT," +
+                    SensorData.COLUMN_NAME_MOTION_COUNTER + " TEXT," +
+                    SensorData.COLUMN_NAME_PAYLOAD + " TEXT," +
+                    SensorData.COLUMN_NAME_TEMPERATURE + " TEXT," +
+                    SensorData.COLUMN_NAME_TIMESTAMP + " TEXT NOT NULL UNIQUE)";
+
+    private static final String SQL_DELETE_ENTRIES =
+            "DROP TABLE IF EXISTS " + SensorData.TABLE_NAME;
+
 
 
 
     public SensorDataDBHelper(Context context) {
-        super(context, DATABASE_NAME , null, 1);
+        super(context, DATABASE_NAME , null, DATABASE_VERSION);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(
-                "create table sensor_data " +
-                        "(id text primary key, seqno text,payload text,temperature text, humidity text,light text, motion_counter text, battery text)"
-        );
+        db.execSQL(SQL_CREATE_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS sensor_data");
+        db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
     }
-    public boolean insertSensorData(String seqno,String payload,String temperature, String humidity, String light, String motionCounter,String battery){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("seqno", seqno);
-        contentValues.put("payload", payload);
-        contentValues.put("temperature", temperature);
-        contentValues.put("humidity", humidity);
-        contentValues.put("light", light);
-        contentValues.put("motion_counter",motionCounter);
-        contentValues.put("battery",battery);
-        db.insert("sensor_data", null, contentValues);
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db,oldVersion,newVersion);
+    }
+
+
+    public boolean insertSensorData(String sensorId, String seqno,String timestamp, String payload, String temperature, String humidity, String light, String motionCounter, String battery){
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(SensorData.COLUMN_NAME_SENSOR_ID, sensorId);
+            contentValues.put(SensorData.COLUMN_NAME_SEQNO, seqno);
+            contentValues.put(SensorData.COLUMN_NAME_PAYLOAD, payload);
+            contentValues.put(SensorData.COLUMN_NAME_TEMPERATURE, temperature);
+            contentValues.put(SensorData.COLUMN_NAME_HUMIDITY, humidity);
+            contentValues.put(SensorData.COLUMN_NAME_LIGHT, light);
+            contentValues.put(SensorData.COLUMN_NAME_MOTION_COUNTER, motionCounter);
+            contentValues.put(SensorData.COLUMN_NAME_BATTERY, battery);
+            contentValues.put(SensorData.COLUMN_NAME_TIMESTAMP, timestamp);
+            db.insertOrThrow(SensorData.TABLE_NAME,null,contentValues);
+            //db.insert("sensor_data", null, contentValues);
         return true;
     }
     public Cursor getData(String id) {
@@ -63,7 +86,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     }
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, SENSOR_DATA_TABLE_NAME);
+        int numRows = (int) DatabaseUtils.queryNumEntries(db, SensorData.TABLE_NAME);
         return numRows;
     }
 
@@ -79,6 +102,12 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         contentValues.put("battery",battery);
         db.update("sensor_data", contentValues, "id = ? ", new String[] { id } );
         return true;
+    }
+
+    public boolean dropTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE sensor_data");
+        return  true;
     }
 
     public Integer deleteSensorValue (String id) {
@@ -97,7 +126,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex(SENSOR_DATA_TABLE_NAME)));
+            array_list.add(res.getString(res.getColumnIndex(SensorData.TABLE_NAME)));
             res.moveToNext();
         }
         return array_list;

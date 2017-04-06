@@ -8,14 +8,16 @@ import java.util.Date;
 
 class SensorData {
     private String moteeui;
+    private String seqno;
     private String temperature;
     private String humidity;
     private String light;
     private String motionCounter;
     private String battery;
     private String timeString;
+    private String payload;
 
-    public SensorData(String moteeui, String temperature, String humidity, String light, String motionCounter, String battery, String timeString) {
+    public SensorData(String moteeui,String payload, String seqno, String temperature, String humidity, String light, String motionCounter, String battery, String timeString) {
         this.moteeui = moteeui;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -23,6 +25,8 @@ class SensorData {
         this.motionCounter = motionCounter;
         this.battery = battery;
         this.timeString = timeString;
+        this.seqno = seqno;
+        this.payload = payload;
     }
 
     public String getMoteeui() {
@@ -80,9 +84,16 @@ class SensorData {
     public void setTimeString(String timeString) {
         this.timeString = timeString;
     }
+    public String getSeqno() {
+        return seqno;
+    }
+
+    public void setSeqno(String seqno) {
+        this.seqno = seqno;
+    }
 
     @Override
     public String toString() {
-        return moteeui + " : "+ battery + " : " + humidity + " : " + motionCounter + " : " + light + " : " + timeString;
+        return moteeui + " : "+ battery + " : " + humidity + " : " + motionCounter + " : " + light + " : " + timeString + " : " + payload + " : " + seqno;
     }
 }
