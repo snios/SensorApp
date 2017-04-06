@@ -8,11 +8,17 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.hardware.Sensor;
 import android.util.Log;
 
 import java.util.ArrayList;
 
 import se.nios.sensorapp.SensorReaderContract.SensorData;
+import se.nios.sensorapp.SensorReaderContract.Sensors;
+import se.nios.sensorapp.SensorReaderContract;
+
+import static se.nios.sensorapp.SensorReaderContract.TABLE_SENSORS;
+import static se.nios.sensorapp.SensorReaderContract.TABLE_SENSOR_DATA;
 
 /**
  * Created by Nicklas on 2017-04-05.
@@ -20,11 +26,14 @@ import se.nios.sensorapp.SensorReaderContract.SensorData;
 
 public class SensorDataDBHelper extends SQLiteOpenHelper{
     private static final String TAG = "SensorDataDBHelper";
+
+    //Database version and name
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME ="SensorApp.db";
 
 
-    private static final String SQL_CREATE_ENTRIES =
+
+    private static final String SQL_CREATE_TABLE_SENSOR_DATA =
             "CREATE TABLE " + SensorData.TABLE_NAME + " (" +
                     SensorData._ID + " INTEGER PRIMARY KEY," +
                     SensorData.COLUMN_NAME_SENSOR_ID + " TEXT," +
@@ -37,8 +46,16 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
                     SensorData.COLUMN_NAME_TEMPERATURE + " TEXT," +
                     SensorData.COLUMN_NAME_TIMESTAMP + " TEXT NOT NULL UNIQUE)";
 
-    private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + SensorData.TABLE_NAME;
+    private static final String SQL_CREATE_TABLE_SENSORS =
+            "CREATE TABLE " + Sensors.TABLE_NAME + " (" +
+                    Sensors._ID +" INTEGER PRIMARY KEY," +
+                    Sensors.COLUMN_NAME_SENSOR_ID + " TEXT NOT NULL UNIQUE," +
+                    Sensors.COLUMN_NAME_NAME + " TEXT," +
+                    Sensors.COLUMN_NAME_GROUP + " TEXT," +
+                    Sensors.COLUMN_NAME_URL + " TEXT NOT NULL UNIQUE)";
+
+    private static final String SQL_DELETE_TABLE =
+            "DROP TABLE IF EXISTS ";
 
 
 
@@ -48,12 +65,14 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_TABLE_SENSOR_DATA);
+        db.execSQL(SQL_CREATE_TABLE_SENSORS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DELETE_ENTRIES);
+        db.execSQL(SQL_DELETE_TABLE + TABLE_SENSOR_DATA);
+        db.execSQL(SQL_DELETE_TABLE + TABLE_SENSORS);
         onCreate(db);
     }
 

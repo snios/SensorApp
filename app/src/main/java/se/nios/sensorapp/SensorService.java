@@ -115,7 +115,7 @@ public class SensorService extends Service implements Runnable {
                 while (inputStream == null) {
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+               Log.d(TAG,"Connection failed = " +e.getMessage());
             }
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder stringBuilder = new StringBuilder();
@@ -178,10 +178,8 @@ public class SensorService extends Service implements Runnable {
         }
 
         @Override
-        protected void onPostExecute(SensorData sensorData) {
-            Log.d(TAG, String.valueOf(motionCounter));
+        protected void onPostExecute(SensorData sensorData) {;
             Log.d(TAG,sensorData.toString());
-
             try {
                 sensorDataDBHelper.insertSensorData(moteeui, seqno, timeString, payload, temperature, humidity, light, motionCounter, battery);
             }catch (SQLException e){
