@@ -10,6 +10,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import se.nios.sensorapp.dbhelper.SensorDBHelper;
+
 /**
  * Created by Nicklas on 2017-04-05.
  */
@@ -50,7 +52,7 @@ public class NewSensorDialog extends DialogFragment implements TextView.OnEditor
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         newSensorEditTextListener activity = (newSensorEditTextListener) getActivity();
-        activity.onNewSensorDialogFinish(mUrlEditText.toString(),mNameEditText.toString(),mGroupEditText.toString());
+        activity.onNewSensorDialogFinish(mUrlEditText.getText().toString(),mNameEditText.getText().toString(),mGroupEditText.getText().toString());
         this.dismiss();
         return false;
     }

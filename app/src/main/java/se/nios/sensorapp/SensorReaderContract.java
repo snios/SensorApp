@@ -34,7 +34,7 @@ public final class SensorReaderContract {
         public static final String COLUMN_NAME_SENSOR_ID = "sensor_id";
         public static final String COLUMN_NAME_URL = "url";
         public static final String COLUMN_NAME_NAME = "name";
-        public static final String COLUMN_NAME_GROUP = "group";
+        public static final String COLUMN_NAME_GROUP = "´group´";
 
     }
 

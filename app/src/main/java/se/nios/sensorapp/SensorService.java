@@ -112,8 +112,6 @@ public class SensorService extends Service implements Runnable {
         protected SensorData doInBackground(String... params) {
             try {
                 inputStream = downloadUrl(params[0]);
-                while (inputStream == null) {
-                }
             } catch (IOException e) {
                Log.d(TAG,"Connection failed = " +e.getMessage());
             }
@@ -185,7 +183,7 @@ public class SensorService extends Service implements Runnable {
             }catch (SQLException e){
                 Log.d(TAG,"SQL exception = " + e.getMessage());
             }
-            Log.d(TAG,"Rows in table: "+String.valueOf(sensorDataDBHelper.numberOfRows()));
+            Log.d(TAG,"Rows in table sensordata: "+String.valueOf(sensorDataDBHelper.numberOfRowsSensorData()));
 
 
 

@@ -28,7 +28,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     private static final String TAG = "SensorDataDBHelper";
 
     //Database version and name
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME ="SensorApp.db";
 
 
@@ -49,7 +49,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     private static final String SQL_CREATE_TABLE_SENSORS =
             "CREATE TABLE " + Sensors.TABLE_NAME + " (" +
                     Sensors._ID +" INTEGER PRIMARY KEY," +
-                    Sensors.COLUMN_NAME_SENSOR_ID + " TEXT NOT NULL UNIQUE," +
+                    Sensors.COLUMN_NAME_SENSOR_ID + " TEXT," +
                     Sensors.COLUMN_NAME_NAME + " TEXT," +
                     Sensors.COLUMN_NAME_GROUP + " TEXT," +
                     Sensors.COLUMN_NAME_URL + " TEXT NOT NULL UNIQUE)";
@@ -81,6 +81,15 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         onUpgrade(db,oldVersion,newVersion);
     }
 
+    public long createSensor(String url, String name, String group){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Sensors.COLUMN_NAME_URL, url);
+        contentValues.put(Sensors.COLUMN_NAME_NAME, name);
+        contentValues.put(Sensors.COLUMN_NAME_GROUP,group);
+        return db.insertOrThrow(Sensors.TABLE_NAME,null,contentValues);
+    }
+
 
     public boolean insertSensorData(String sensorId, String seqno,String timestamp, String payload, String temperature, String humidity, String light, String motionCounter, String battery){
             SQLiteDatabase db = this.getWritableDatabase();
@@ -103,11 +112,17 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         Cursor res =  db.rawQuery( "select * from sensor_data where id="+id+"", null );
         return res;
     }
-    public int numberOfRows(){
+    public int numberOfRowsSensorData(){
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, SensorData.TABLE_NAME);
         return numRows;
     }
+    public int numberOfRowsSensors(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int numRows = (int) DatabaseUtils.queryNumEntries(db, Sensors.TABLE_NAME);
+        return numRows;
+    }
+
 
     public boolean updateSensorValue (String id,String seqno,String payload,String temperature, String humidity, String light, String motionCounter,String battery) {
         SQLiteDatabase db = this.getWritableDatabase();
