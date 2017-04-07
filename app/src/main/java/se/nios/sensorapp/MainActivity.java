@@ -1,25 +1,29 @@
 package se.nios.sensorapp;
 
 import android.app.DialogFragment;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.SQLException;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import se.nios.sensorapp.dbhelper.SensorDBHelper;
 import se.nios.sensorapp.dbhelper.SensorDataDBHelper;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener, NewSensorDialog.newSensorEditTextListener{
     private static final String TAG = "MainActivity";
     //Views
     private SensorDataDBHelper sensorDataDBHelper;
+    private SQLiteDatabase db;
+    private ListView sensorListView;
+    private SensorsCursorAdapter sensorAdapter;
 
 
     @Override
@@ -27,6 +31,22 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sensorDataDBHelper = new SensorDataDBHelper(this);
+        db  = sensorDataDBHelper.getWritableDatabase();
+        sensorListView = (ListView) findViewById(R.id.listView);
+        final Cursor sensorCursor = db.rawQuery("SELECT * FROM sensors",null);
+        sensorAdapter = new SensorsCursorAdapter(this,sensorCursor);
+        sensorListView.setAdapter(sensorAdapter);
+        sensorListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Intent sensorViewIntent = new Intent(getApplicationContext(),SensorActivity.class);
+                sensorViewIntent.putExtra("position", position);
+                sensorViewIntent.putExtra("sensor",sensorCursor.getString(sensorCursor.getColumnIndexOrThrow("url")));
+                startActivity(sensorViewIntent);
+            }
+        });
+
         FloatingActionButton fabNewSensor = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fabNewSensor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             sensorDataDBHelper.createSensor(url, name, group);
             Log.d(TAG,"Rows in table sensors: " +sensorDataDBHelper.numberOfRowsSensors());
             Log.d(TAG,"Values:" + url + " : " +name +" : "+group);
+            //update sensorlist
+            Cursor sensorCursor = db.rawQuery("SELECT * FROM sensors",null);
+            sensorAdapter.changeCursor(sensorCursor);
         }catch (SQLException e){
             Log.d(TAG,"SQL exception = " + e.getMessage());
         }
