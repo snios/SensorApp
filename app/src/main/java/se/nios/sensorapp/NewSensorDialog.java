@@ -7,17 +7,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import se.nios.sensorapp.dbhelper.SensorDBHelper;
 
 /**
  * Created by Nicklas on 2017-04-05.
  */
 
-public class NewSensorDialog extends DialogFragment implements TextView.OnEditorActionListener {
+public class NewSensorDialog extends DialogFragment implements  TextView.OnClickListener {
     private EditText mUrlEditText;
     private EditText mNameEditText;
     private EditText mGroupEditText;
+    private Button mButtonAdd;
     //Empty constructor
     public NewSensorDialog(){
     }
@@ -30,12 +34,11 @@ public class NewSensorDialog extends DialogFragment implements TextView.OnEditor
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.newsensor_dialog, container);
         mUrlEditText = (EditText) view.findViewById(R.id.editTextUrl);
-        mUrlEditText.setOnEditorActionListener(this);
         mUrlEditText.requestFocus();
         mNameEditText = (EditText) view.findViewById(R.id.editTextName);
-        mNameEditText.setOnEditorActionListener(this);
         mGroupEditText = (EditText) view.findViewById(R.id.editTextGroup);
-        mGroupEditText.setOnEditorActionListener(this);
+        mButtonAdd = (Button) view.findViewById(R.id.buttonAdd);
+        mButtonAdd.setOnClickListener(this);
 
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -48,10 +51,9 @@ public class NewSensorDialog extends DialogFragment implements TextView.OnEditor
     }
 
     @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+    public void onClick(View v) {
         newSensorEditTextListener activity = (newSensorEditTextListener) getActivity();
-        activity.onNewSensorDialogFinish(mUrlEditText.toString(),mNameEditText.toString(),mGroupEditText.toString());
+        activity.onNewSensorDialogFinish(mUrlEditText.getText().toString(),mNameEditText.getText().toString(),mGroupEditText.getText().toString());
         this.dismiss();
-        return false;
     }
 }
