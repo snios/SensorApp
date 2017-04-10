@@ -19,7 +19,7 @@ import se.nios.sensorapp.dbhelper.SensorDataDBHelper;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnClickListener, NewSensorDialog.newSensorEditTextListener{
     private static final String TAG = "MainActivity";
-    //Views
+
     private SensorDataDBHelper sensorDataDBHelper;
     private SQLiteDatabase db;
     private ListView sensorListView;

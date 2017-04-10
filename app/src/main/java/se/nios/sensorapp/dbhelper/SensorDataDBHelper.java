@@ -107,6 +107,12 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
             //db.insert("sensor_data", null, contentValues);
         return true;
     }
+
+    public Cursor getSensorData(String sensorID){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM sensor_data WHERE sensorId ="+sensorID,null);
+        return res;
+    }
     public Cursor getData(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from sensor_data where id="+id+"", null );
