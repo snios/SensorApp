@@ -26,7 +26,7 @@ public class SensorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
-        //
+        //Generate data for table...
         Intent getIntent = getIntent();
         Log.d(TAG,getIntent.getStringExtra("sensor").toString());
         sensorId = getIntent.getStringExtra("sensor").toString();

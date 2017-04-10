@@ -49,10 +49,9 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     private static final String SQL_CREATE_TABLE_SENSORS =
             "CREATE TABLE " + Sensors.TABLE_NAME + " (" +
                     Sensors._ID +" INTEGER PRIMARY KEY," +
-                    Sensors.COLUMN_NAME_SENSOR_ID + " TEXT," +
+                    Sensors.COLUMN_NAME_SENSOR_ID + " TEXT NOT NULL UNIQUE," +
                     Sensors.COLUMN_NAME_NAME + " TEXT," +
-                    Sensors.COLUMN_NAME_GROUP + " TEXT," +
-                    Sensors.COLUMN_NAME_URL + " TEXT NOT NULL UNIQUE)";
+                    Sensors.COLUMN_NAME_GROUP + " TEXT)";
 
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS ";
@@ -81,10 +80,10 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
         onUpgrade(db,oldVersion,newVersion);
     }
 
-    public long createSensor(String url, String name, String group){
+    public long createSensor(String sensorId, String name, String group){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Sensors.COLUMN_NAME_URL, url);
+        contentValues.put(Sensors.COLUMN_NAME_SENSOR_ID,sensorId);
         contentValues.put(Sensors.COLUMN_NAME_NAME, name);
         contentValues.put(Sensors.COLUMN_NAME_GROUP,group);
         return db.insertOrThrow(Sensors.TABLE_NAME,null,contentValues);
@@ -115,7 +114,7 @@ public class SensorDataDBHelper extends SQLiteOpenHelper{
     }
     public Cursor getData(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from sensor_data where id="+id+"", null );
+        Cursor res =  db.rawQuery( "select * from sensor_data where url="+"`"+id+"`", null );
         return res;
     }
     public int numberOfRowsSensorData(){

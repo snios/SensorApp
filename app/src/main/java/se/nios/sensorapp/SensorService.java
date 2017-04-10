@@ -32,6 +32,7 @@ import se.nios.sensorapp.dbhelper.SensorDataDBHelper;
 
 public class SensorService extends Service implements Runnable {
     private static final String TAG = "SensorService";
+    private static final String URL = "http://lorawan.testbed.se/json/lora/";
     private Thread serviceThread = null;
     private boolean runService = true;
     private long sleepInterval; //In milliseconds

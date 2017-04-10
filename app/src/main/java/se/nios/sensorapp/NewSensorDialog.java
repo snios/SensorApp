@@ -18,7 +18,7 @@ import se.nios.sensorapp.dbhelper.SensorDBHelper;
  */
 
 public class NewSensorDialog extends DialogFragment implements  TextView.OnClickListener {
-    private EditText mUrlEditText;
+    private EditText mIdEditText;
     private EditText mNameEditText;
     private EditText mGroupEditText;
     private Button mButtonAdd;
@@ -33,8 +33,8 @@ public class NewSensorDialog extends DialogFragment implements  TextView.OnClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.newsensor_dialog, container);
-        mUrlEditText = (EditText) view.findViewById(R.id.editTextUrl);
-        mUrlEditText.requestFocus();
+        mIdEditText = (EditText) view.findViewById(R.id.editTextId);
+        mIdEditText.requestFocus();
         mNameEditText = (EditText) view.findViewById(R.id.editTextName);
         mGroupEditText = (EditText) view.findViewById(R.id.editTextGroup);
         mButtonAdd = (Button) view.findViewById(R.id.buttonAdd);
@@ -53,7 +53,7 @@ public class NewSensorDialog extends DialogFragment implements  TextView.OnClick
     @Override
     public void onClick(View v) {
         newSensorEditTextListener activity = (newSensorEditTextListener) getActivity();
-        activity.onNewSensorDialogFinish(mUrlEditText.getText().toString(),mNameEditText.getText().toString(),mGroupEditText.getText().toString());
+        activity.onNewSensorDialogFinish(mIdEditText.getText().toString(),mNameEditText.getText().toString(),mGroupEditText.getText().toString());
         this.dismiss();
     }
 }
